@@ -1,4 +1,5 @@
 import { Cell, LabelList, Pie, PieChart} from "recharts";
+import './../styles/CategoryChart.css';
 
 function DifficultyChart({ questions }) {
 
@@ -21,17 +22,17 @@ function DifficultyChart({ questions }) {
     }
     
     return (
-        <div style={{ display: "flex" ,gap: "20px", alignItems: "flex-start"}}> 
-            <div>
-                <h3>Difficulties</h3>  
-                <PieChart width={400} height={400}>
+        <div className="chart-column">
+            <h3>Difficulties Chart</h3>  
+            <div className="chart-wrapper">
+                <PieChart width={300} height={250}>
                     <Pie
                         dataKey="count"
                         isAnimationActive={false}
                         data={chartData}
                         cx="50%"
                         cy="50%"
-                        outerRadius={100}
+                        outerRadius={90}
                         fill="#8884d8"
                         label={({ name }) => name}
                         nameKey="name"

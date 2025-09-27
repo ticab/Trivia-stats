@@ -1,15 +1,20 @@
 .App {
   text-align: center;
 }
+
+.app-header {
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
 .charts-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 40px;
   justify-content: center;
-  align-items: center;
-  gap: 20px;
-  height: 500px;
-  overflow-y: scroll;
-  padding-left: 20px;
-  padding-bottom: 20px;
+  align-items: start;
+  text-align: center;
 }
 
 .categories {

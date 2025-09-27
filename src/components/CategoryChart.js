@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
+import './../styles/CategoryChart.css';
+import he from 'he';
 
 
 function CategoryChart({ questions  = [] }) {
@@ -7,33 +9,38 @@ function CategoryChart({ questions  = [] }) {
     const [subChartData, setSubChartData] = useState(null);
     const [activeCategory, setActiveCategory] = useState(null);
 
-    function decodeHtml(html) {
-        const txt = document.createElement("textarea");
-        txt.innerHTML = html;
-        return txt.value;
-    }
-    const categoryCounts = questions.reduce((map, q) => {
-        const mainCategory = decodeHtml(q.category).split(":")[0];
-        map[mainCategory] = (map[mainCategory] || 0) + 1;
+    const counts = questions.reduce((map, q) => {
+        const [main, sub] = he.decode(q.category).split(":").map(s => s.trim());
+        
+        if (!map[main]) {
+            map[main] = { count: 0, subs: {} };
+        }
+        map[main].count += 1;
+
+        if (sub) {
+            map[main].subs[sub] = (map[main].subs[sub] || 0) + 1;
+        }
+
         return map;
     }, {});
 
-    const subcategoryCounts = questions.reduce((map, q) => {
-        const [main, sub] = decodeHtml(q.category).split(":").map(s => s.trim());
-        if(sub){
-            if(!map[main]) map[main] = {};
-            map[main][sub] = (map[main][sub] || 0) + 1;
-        }
-        return map;
-    }, {});
+    const chartData = Object.entries(counts).map(([key, value]) => ({
+        name: key,
+        count: value.count
+    }));
+
+    const getSubChartData = (main) => {
+        return Object.entries(counts[main].subs).map(([key, value]) => ({
+            name: key,
+            count: value
+        }));
+    }
 
     const showSubchart = (data) => {
-        if(subcategoryCounts[data]){
+        const subchart = getSubChartData(data)
+        if(subchart.length > 0){
             setShowingSubchart(true);
-            setSubChartData(Object.entries(subcategoryCounts[data]).map(([key, value]) => ({
-                name: `${key}`, 
-                count: value 
-            })));
+            setSubChartData(subchart);
             setActiveCategory(data);
         }
         else {
@@ -41,54 +48,42 @@ function CategoryChart({ questions  = [] }) {
         }
     }
 
-    const chartData = Object.entries(categoryCounts).map(([key, value]) => ({
-        name: `${key}`, 
-        count: value 
-    }));
+    const COLORS = { main: "#4313A9ff", sub: "#A9132Eff" };
 
-    const maxCount = Math.max(...chartData.map(item => item.count));
-    const maxLabelLength = Math.max(...chartData.map(item => item.name.length));
-    
+    const Chart = ({ data, onClickBar, color }) => {
+        const maxLabelLength = Math.max(...data.map(item => item.name.length), 0);
+
+        return (
+            <BarChart layout="vertical" width={400} height={(data.length + 1) * 35} data={data}>
+            <CartesianGrid strokeDasharray="3" />
+            <XAxis type="number" />
+            <YAxis type="category" dataKey="name" width={maxLabelLength * 10} />
+            <Tooltip />
+            <Bar dataKey="count" fill={color} onClick={onClickBar} />
+            </BarChart>
+        );
+    }
+
     return (
-        <div>
+        <div className="chart-column">
             {!showingSubchart && (
                 <div>
-                    <h3>Categories</h3>  
-                    <BarChart
-                        layout="vertical"
-                        width={maxCount * 20}
-                        height={Math.max(400, (chartData.length+1) * 35)}
-                        data={chartData}
-                        isAnimationActive={true}
-                    >
-                        <CartesianGrid strokeDasharray="3"/>
-                        <XAxis type="number" />
-                        <YAxis type="category" dataKey="name" width={maxLabelLength * 10} />
-                        <Tooltip />
-                        <Bar dataKey="count" fill="#4313A9ff" 
-                        onClick={(data) => { showSubchart(data.name); }}/>
-                    </BarChart>
+                    <h3>Categories Chart</h3>  
+                    <div className="chart-wrapper">
+                        <Chart  data={chartData} color={COLORS.main} onClickBar={(data) => { showSubchart(data.name); }} />
+                    </div>
                 </div>
             )}
             {showingSubchart && (
                 <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <h3>{activeCategory} Subcategories</h3> 
-                        <button onClick={() => setShowingSubchart(false)}>Back</button>
+                    <div className='subchart-header'>
+                    <h3>{activeCategory} Subcategories</h3> 
+                    <button onClick={() => setShowingSubchart(false)}>Back</button>
                     </div>
-                    <BarChart
-                        layout="vertical"
-                        width={maxCount * 20}
-                        height={Math.max(400, (subChartData.length+1) * 35)}
-                        data={subChartData}
-                        isAnimationActive={false}
-                    >
-                        <CartesianGrid strokeDasharray="3"/>
-                        <XAxis type="number" />
-                        <YAxis type="category" dataKey="name" width={maxLabelLength * 10} />
-                        <Tooltip />
-                        <Bar dataKey="count" fill="#A9132Eff" /> 
-                    </BarChart>
+                    
+                    <div className="chart-wrapper">
+                        <Chart data={subChartData} color={COLORS.sub} />
+                    </div>
                 </div>
             )}
         

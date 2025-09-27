@@ -8,12 +8,7 @@ function FilterCategories({ questions = [] }) {
     const [sub, setSub] = useState(null);
     const [q, setQ] = useState([]);
     const [activeCategory, setActiveCategory] = useState(null);
-
-    function decodeHtml(html) {
-        const txt = document.createElement("textarea");
-        txt.innerHTML = html;
-        return txt.value;
-    }
+    const [activeSubcategory, setActiveSubcategory] = useState(null);
 
     const categories = questions.reduce((map, q) => {
         const cat = he.decode(q.category).split(":")[0];
@@ -23,7 +18,7 @@ function FilterCategories({ questions = [] }) {
     }, {});
 
     const subcategories = questions.reduce((map, q) => {
-        const [main, sub] = decodeHtml(q.category).split(":").map(s => s.trim());
+        const [main, sub] = he.decode(q.category).split(":").map(s => s.trim());
         if(sub){
             if(!map[main]) map[main] = {};
             if (!map[main][sub]) map[main][sub] = [];
@@ -33,6 +28,14 @@ function FilterCategories({ questions = [] }) {
     }, {});
 
     const showSubcategories = (category) => {
+        if(activeCategory === category){
+            setShowingSubcategories(false);
+            setActiveCategory(null);
+            setActiveSubcategory(null);
+            setQ([]);
+            return;
+        }
+
         setActiveCategory(category);
         if(!subcategories[category]){
             setShowingSubcategories(null);
@@ -49,8 +52,12 @@ function FilterCategories({ questions = [] }) {
             setQ(categories[category] || []);
         }
         else{
-            console.log(activeCategory, category);
-            console.log(subcategories[activeCategory][category] )
+            if(activeSubcategory === category){
+                setActiveSubcategory(null);
+                setQ([]);
+                return;
+            }
+            setActiveSubcategory(category);
             setQ(subcategories[activeCategory][category] || []);
         }
     }   
@@ -61,8 +68,8 @@ function FilterCategories({ questions = [] }) {
             <div>
                 <h3 style={{ marginBottom: "10px" }}>Categories</h3>
                 <div className="categories-list">
-                {Object.entries(categories).map(([name, questions], index) => (
-                    <div key={`cell-${name}`} className="category" onClick={() => showSubcategories(name)}>
+                {Object.entries(categories).map(([name]) => (
+                    <div key={`cell-${name}`} className={`category ${activeCategory === name ? "active" : ""}`} onClick={() => showSubcategories(name)}>
                     <strong>{name}</strong>
                     </div>
                 ))}
@@ -73,7 +80,7 @@ function FilterCategories({ questions = [] }) {
                     <h3 style={{ marginBottom: "10px" }}>Subcategories</h3>
                     <div className="categories-list">
                     {Object.entries(sub).map(([name]) => (
-                        <div key={`cell-${name}`} className="category" onClick={() => showQuestions(name, false)}>
+                        <div key={`cell-${name}`} className={`category ${activeSubcategory === name ? "active" : ""}`} onClick={() => showQuestions(name, false)}>
                         <strong>{name}</strong>
                         </div>
                     ))}

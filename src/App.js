@@ -17,16 +17,15 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Trivia Visualizer</h1>
-      
+      <h1 className='app-header'>Trivia Visualizer</h1>
+
       <div className="categories">
         <FilterCategories questions={questions} />
       </div>
       
-
       <div className="charts-container">
         <DifficultyChart questions={questions} />
-        <CategoryChart questions={questions} />
+        <CategoryChart questions={questions}/>
       </div>
     </div>
   );
