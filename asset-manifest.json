@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Trivia-stats/static/css/main.a9ac2173.css",
+    "main.js": "/Trivia-stats/static/js/main.edcf0b67.js",
+    "static/js/453.c3e9b16c.chunk.js": "/Trivia-stats/static/js/453.c3e9b16c.chunk.js",
+    "index.html": "/Trivia-stats/index.html",
+    "main.a9ac2173.css.map": "/Trivia-stats/static/css/main.a9ac2173.css.map",
+    "main.edcf0b67.js.map": "/Trivia-stats/static/js/main.edcf0b67.js.map",
+    "453.c3e9b16c.chunk.js.map": "/Trivia-stats/static/js/453.c3e9b16c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a9ac2173.css",
+    "static/js/main.edcf0b67.js"
+  ]
+}
