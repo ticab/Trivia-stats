@@ -8,7 +8,20 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.charts-container {
+.hidden {
+  display: none;
+}
+
+.categories {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.charts-container-row {
   display: grid;
   grid-template-columns: auto auto;
   gap: 40px;
@@ -17,15 +30,13 @@
   text-align: center;
 }
 
-.categories {
+.questions-list {
   display: flex;
-  justify-content: flex-start;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  padding-left: 20px;
-  padding-bottom: 20px;
+  width: 100%;
+  max-width: 80%;
+  margin: 0 auto;
 }
 
 button {
