@@ -19,15 +19,11 @@
 }
 
 .category.active {
-  background-color: #dbeafe;
+  background-color: #b1f6ea;
   border-radius: 6px;
 }
 
 .category:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.category:click{
-    background-color: #b83232;
 }

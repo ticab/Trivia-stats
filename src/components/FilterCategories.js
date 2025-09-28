@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import './../styles/FilterCategories.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import he from 'he';
@@ -10,22 +10,26 @@ function FilterCategories({ questions = [] }) {
     const [activeCategory, setActiveCategory] = useState(null);
     const [activeSubcategory, setActiveSubcategory] = useState(null);
 
-    const categories = questions.reduce((map, q) => {
-        const cat = he.decode(q.category).split(":")[0];
-        if (!map[cat]) map[cat] = [];
-        map[cat].push({...q, question: he.decode(q.question)});
-        return map;
-    }, {});
+    const categories = useMemo(() => {
+        return questions.reduce((map, q) => {
+            const cat = he.decode(q.category).split(":")[0];
+            if (!map[cat]) map[cat] = [];
+            map[cat].push({...q, question: he.decode(q.question)});
+            return map;
+        }, {});
+    }, [questions]);
 
-    const subcategories = questions.reduce((map, q) => {
-        const [main, sub] = he.decode(q.category).split(":").map(s => s.trim());
-        if(sub){
-            if(!map[main]) map[main] = {};
-            if (!map[main][sub]) map[main][sub] = [];
-            map[main][sub].push({...q, question: he.decode(q.question)});
-        }
-        return map;
-    }, {});
+    const subcategories = useMemo(() => { 
+        return questions.reduce((map, q) => {
+            const [main, sub] = he.decode(q.category).split(":").map(s => s.trim());
+            if(sub){
+                if(!map[main]) map[main] = {};
+                if (!map[main][sub]) map[main][sub] = [];
+                map[main][sub].push({...q, question: he.decode(q.question)});
+            }
+            return map;
+        }, {});
+    }, [questions]);
 
     const showSubcategories = (category) => {
         if(activeCategory === category){
@@ -90,11 +94,11 @@ function FilterCategories({ questions = [] }) {
             {q.length > 0 && (
             <div>
                 <h3 style={{ marginBottom: "10px" }}>Questions</h3>
-                <table class="table table-hover">
-                    <thead class="table-dark">
+                <table className="table table-hover">
+                    <thead className="table-dark">
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col">Question</th>
+                            <th scope="col">Question </th>
                             <th scope="col">Difficulty</th>
                             <th scope="col">Type</th>
                         </tr>

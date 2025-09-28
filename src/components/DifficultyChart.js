@@ -1,18 +1,29 @@
 import { Cell, LabelList, Pie, PieChart} from "recharts";
 import './../styles/CategoryChart.css';
+import { useMemo } from "react";
+import he from 'he';
 
-function DifficultyChart({ questions }) {
+function DifficultyChart({ questions, selectedCategory = null }) {
 
-    const categoryCounts = questions.reduce((map, q) => {
-        const difficulty = q.difficulty;
-        map[difficulty] = (map[difficulty] || 0) + 1;
-        return map;
-    }, {});
+    const categoryCounts = useMemo(() => { 
+        const filteredQuestions = selectedCategory ? questions.filter(q => {
+            const mainCategory = he.decode(q.category).split(":")[0].trim();
+            return mainCategory === selectedCategory;
+        }) : questions;
 
-    const chartData = Object.keys(categoryCounts).map(key => ({
-        name: `${key}`, 
-        count: categoryCounts[key] 
-    }));
+        return filteredQuestions.reduce((map, q) => {
+            const difficulty = q.difficulty;
+            map[difficulty] = (map[difficulty] || 0) + 1;
+            return map;
+        }, {});
+    }, [questions, selectedCategory]);
+
+    const chartData =  useMemo(() => {  
+        return Object.keys(categoryCounts).map(key => ({
+            name: `${key}`, 
+            count: categoryCounts[key] 
+        }));
+    }, [categoryCounts]);
     const COLORS = ['#4313A9ff', '#13a98eff', '#A9132Eff'];
 
     const total = chartData.reduce((sum, entry) => sum + entry.count, 0);
@@ -25,7 +36,7 @@ function DifficultyChart({ questions }) {
         <div className="chart-column">
             <h3>Difficulties Chart</h3>  
             <div className="chart-wrapper">
-                <PieChart width={300} height={250}>
+                <PieChart width={350} height={250}>
                     <Pie
                         dataKey="count"
                         isAnimationActive={false}

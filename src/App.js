@@ -6,8 +6,8 @@ import DifficultyChart from './components/DifficultyChart';
 import FilterCategories from './components/FilterCategories';
 
 function App() {
-  //https://opentdb.com/api.php?amount=50&category=17&difficulty=easy&type=multiple
   const [questions, setQuestions] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const baseUrl = 'https://opentdb.com/api.php?amount=50' 
 
   useEffect(() => {
@@ -24,8 +24,8 @@ function App() {
       </div>
       
       <div className="charts-container">
-        <DifficultyChart questions={questions} />
-        <CategoryChart questions={questions}/>
+        <DifficultyChart questions={questions} selectedCategory={selectedCategory} />
+        <CategoryChart questions={questions} onCategoryClick={setSelectedCategory} />
       </div>
     </div>
   );
